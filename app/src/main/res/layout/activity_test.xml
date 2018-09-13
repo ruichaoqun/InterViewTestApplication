@@ -5,17 +5,21 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".custombehavior.TestActivity">
-    <RelativeLayout
+    <com.interview.administrator.interviewtestapplication.custombehavior.CustomHeadLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="180dp"
         app:layout_behavior="com.interview.administrator.interviewtestapplication.custombehavior.CustomBehavior">
-
-    </RelativeLayout>
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:src="@mipmap/image"
+            android:scaleType="centerCrop"/>
+    </com.interview.administrator.interviewtestapplication.custombehavior.CustomHeadLayout>
 
     <android.support.v4.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        app:layout_behavior="com.interview.administrator.interviewtestapplication.custombehavior.CustomBehavior.ScrollingViewBehavior">
+        app:layout_behavior="@string/Scrolling_behavior">
         <TextView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
@@ -23,9 +27,12 @@
     </android.support.v4.widget.NestedScrollView>
 
     <android.support.v7.widget.Toolbar
+        android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:title="撒大家分工"
+        app:titleTextColor="@android:color/white"
         app:navigationIcon="@mipmap/ic_arrow_left_white"
-        app:collapseIcon="@mipmap/ic_share"/>
+        app:collapseIcon="@mipmap/ic_share"
+        android:background="#33660000"/>
 </android.support.design.widget.CoordinatorLayout>

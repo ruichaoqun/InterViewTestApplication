@@ -8,6 +8,7 @@
     <string name="dummy_button">Dummy Button</string>
     <string name="dummy_content">DUMMY\nCONTENT</string>
     <string name="title_activity_scrolling">ScrollingActivity</string>
+    <string name="Scrolling_behavior" translatable="false">com.interview.administrator.interviewtestapplication.custombehavior.CustomBehavior$ScrollingViewBehavior</string>
     <string name="large_text">
         "Material is the metaphor.\n\n"
 
