@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".custombehavior.TestActivity">
-    <ImageView
+    <com.interview.administrator.interviewtestapplication.DynamicSizeImageView
         android:id="@+id/image"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -18,26 +18,162 @@
         android:layout_width="match_parent"
         android:layout_height="180dp"
         app:layout_behavior="com.interview.administrator.interviewtestapplication.custombehavior.CustomBehavior">
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true">
+            <de.hdodenhof.circleimageview.CircleImageView
+                android:layout_width="80dp"
+                android:layout_height="80dp"
+                android:src="@mipmap/ic_avatar"
+                android:layout_marginLeft="20dp"
+                android:id="@+id/cv_avatar"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Read The fucking Source Code"
+                android:textColor="@android:color/white"
+                android:textStyle="bold"
+                android:textSize="14sp"
+                android:layout_below="@+id/cv_avatar"
+                android:layout_marginTop="25dp"
+                android:layout_marginLeft="20dp"
+                android:id="@+id/tv_name"/>
+            <LinearLayout
+                android:id="@+id/ll_gf"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_below="@+id/tv_name"
+                android:layout_marginTop="10dp"
+                android:layout_marginLeft="20dp">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="12sp"
+                    android:textColor="@android:color/white"
+                    android:text="关注 12"/>
+                <View
+                    android:layout_width="1px"
+                    android:layout_height="8dp"
+                    android:background="#999999"
+                    android:layout_gravity="center"
+                    android:layout_marginLeft="5dp"/>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="12sp"
+                    android:textColor="@android:color/white"
+                    android:text="粉丝 1"
+                    android:layout_marginLeft="5dp"/>
+            </LinearLayout>
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginTop="5dp"
+                android:layout_marginLeft="20dp"
+                android:layout_marginBottom="25dp"
+                android:layout_below="@+id/ll_gf">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:background="@drawable/shape_round_black"
+                    android:textSize="12sp"
+                    android:textColor="@android:color/white"
+                    android:text="黑胶CNIP"
+                    android:paddingLeft="5dp"
+                    android:paddingRight="5dp"
+                    android:paddingTop="3dp"
+                    android:paddingBottom="3dp"/>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:background="@drawable/shape_round"
+                    android:textSize="12sp"
+                    android:textColor="@android:color/white"
+                    android:text="LV.9"
+                    android:paddingLeft="5dp"
+                    android:paddingRight="5dp"
+                    android:paddingTop="3dp"
+                    android:textStyle="bold"
+                    android:paddingBottom="3dp"
+                    android:layout_marginLeft="10dp"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:background="@drawable/shape_round"
+                    android:textSize="12sp"
+                    android:textColor="@android:color/white"
+                    android:text="广州市"
+                    android:textStyle="bold"
+                    android:paddingLeft="5dp"
+                    android:paddingRight="5dp"
+                    android:paddingTop="3dp"
+                    android:paddingBottom="3dp"
+                    android:layout_marginLeft="10dp"/>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="90dp"
+                android:layout_height="35dp"
+                android:background="@drawable/shape_button_bg"
+                android:orientation="horizontal"
+                android:layout_alignParentRight="true"
+                android:layout_marginTop="10dp"
+                android:layout_marginRight="15dp"
+                android:gravity="center">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:drawableLeft="@mipmap/ic_edit"
+                    android:text="编辑"
+                    android:drawablePadding="5dp"
+                    android:textSize="14sp"
+                    android:gravity="center"
+                    android:textColor="@android:color/white" />
+            </LinearLayout>
+
+        </RelativeLayout>
+
 
     </com.interview.administrator.interviewtestapplication.custombehavior.CustomHeadLayout>
 
-    <android.support.v4.widget.NestedScrollView
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:orientation="vertical"
         app:layout_behavior="@string/Scrolling_behavior">
-        <TextView
+        <android.support.design.widget.TabLayout
+            android:id="@+id/tab_layout"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:text="@string/large_text"/>
-    </android.support.v4.widget.NestedScrollView>
+            android:layout_height="wrap_content"
+            android:background="@drawable/bg_tablayout"/>
+        <android.support.v4.view.ViewPager
+            android:id="@+id/view_pager"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+    </LinearLayout>
 
     <android.support.v7.widget.Toolbar
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:title="撒大家分工"
         app:titleTextColor="@android:color/white"
-        app:navigationIcon="@mipmap/ic_arrow_left_white"
-        app:collapseIcon="@mipmap/ic_share"
-        android:background="#33660000"/>
+        app:navigationIcon="@mipmap/ic_back"
+        app:collapseIcon="@mipmap/ic_share" >
+        <TextView
+            android:id="@+id/tv_app_bar_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:text="水电费"
+            android:textColor="@android:color/white"
+            android:textSize="15sp"
+            android:textStyle="bold"/>
+    </android.support.v7.widget.Toolbar>
 </android.support.design.widget.CoordinatorLayout>

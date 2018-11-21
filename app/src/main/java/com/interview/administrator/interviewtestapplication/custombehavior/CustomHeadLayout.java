@@ -40,14 +40,16 @@ public class CustomHeadLayout extends RelativeLayout {
         }
     }
 
-    void dispatchOffsetUpdates(int offset) {
+    void dispatchOffsetUpdates(int offset,float rate) {
         // Iterate backwards through the list so that most recently added listeners
         // get the first chance to decide
+//        Log.w("AAA","offset-->"+offset);
+        setAlpha(rate);
         if (mListeners != null) {
             for (int i = 0, z = mListeners.size(); i < z; i++) {
                 final OnOffsetChangedListener listener = mListeners.get(i);
                 if (listener != null) {
-                    listener.onOffsetChanged(this, offset);
+                    listener.onOffsetChanged(this, offset,rate);
                 }
             }
         }
@@ -56,6 +58,6 @@ public class CustomHeadLayout extends RelativeLayout {
 
     public interface OnOffsetChangedListener {
 
-        void onOffsetChanged(CustomHeadLayout headLayout, int verticalOffset);
+        void onOffsetChanged(CustomHeadLayout headLayout, int verticalOffset,float rate);
     }
 }

@@ -20,6 +20,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 
+import com.interview.administrator.interviewtestapplication.DynamicSizeImageView;
 import com.interview.administrator.interviewtestapplication.UiUtils;
 import com.interview.administrator.interviewtestapplication.custombehavior.CustomHeaderScrollingViewBehavior;
 
@@ -77,6 +78,7 @@ public class CustomBehavior extends HeaderBehavior<CustomHeadLayout>{
         }
         mMinOffsetTop = - child.getMeasuredHeight()  + minHeaderHeight;
         mScrollRange = -mMinOffsetTop;
+//        Log.w("AAA","onMeasureChild");
         return true;
     }
 
@@ -90,7 +92,8 @@ public class CustomBehavior extends HeaderBehavior<CustomHeadLayout>{
     @Override
     int setHeaderTopBottomOffset(CoordinatorLayout parent, CustomHeadLayout header, int newOffset, int minOffset, int maxOffset) {
         int cnsumed = super.setHeaderTopBottomOffset(parent,header,newOffset,minOffset,maxOffset);
-        header.dispatchOffsetUpdates(getTopAndBottomOffset());
+        float rate =(float)(mMinOffsetTop - getTopAndBottomOffset())/(float)(mMinOffsetTop - mOriginalOffsetTop);
+        header.dispatchOffsetUpdates(getTopAndBottomOffset(),rate);
         return cnsumed;
     }
 
@@ -191,9 +194,10 @@ public class CustomBehavior extends HeaderBehavior<CustomHeadLayout>{
             final CoordinatorLayout.Behavior behavior =
                     ((CoordinatorLayout.LayoutParams) dependency.getLayoutParams()).getBehavior();
             if (behavior instanceof CustomBehavior) {
-                ViewCompat.offsetTopAndBottom(child, (dependency.getBottom() - child.getTop())
-                        + getVerticalLayoutGap()
-                        - getOverlapPixelsForOffset(dependency));
+                int offset = (dependency.getBottom() - child.getTop())
+                + getVerticalLayoutGap()
+                        - getOverlapPixelsForOffset(dependency);
+                ViewCompat.offsetTopAndBottom(child, offset);
             }
         }
 
@@ -218,7 +222,7 @@ public class CustomBehavior extends HeaderBehavior<CustomHeadLayout>{
 
 
 
-    public static class ImageBehavior extends CoordinatorLayout.Behavior<ImageView>{
+    public static class ImageBehavior extends CoordinatorLayout.Behavior<DynamicSizeImageView>{
         public ImageBehavior() {
         }
 
@@ -227,26 +231,33 @@ public class CustomBehavior extends HeaderBehavior<CustomHeadLayout>{
         }
 
         @Override
-        public boolean layoutDependsOn(CoordinatorLayout parent, ImageView child, View dependency) {
+        public boolean layoutDependsOn(CoordinatorLayout parent, DynamicSizeImageView child, View dependency) {
             return dependency instanceof CustomHeadLayout;
         }
 
         @Override
-        public boolean onDependentViewChanged(CoordinatorLayout parent, ImageView child, View dependency) {
+        public boolean onDependentViewChanged(CoordinatorLayout parent, DynamicSizeImageView child, View dependency) {
             CustomHeadLayout layout = (CustomHeadLayout) dependency;
             CustomBehavior behavior = (CustomBehavior) ((CoordinatorLayout.LayoutParams)layout.getLayoutParams()).getBehavior();
-            ViewGroup.LayoutParams params = child.getLayoutParams();
-            params.height = layout.getMeasuredHeight() + behavior.getTopAndBottomOffset();
-            //child.setLayoutParams(params);
-            Log.w("AAA","height-->"+params.height);
+//            child.setPadding(0,0,0,-behavior.getTopAndBottomOffset());
+            ViewGroup.LayoutParams params = dependency.getLayoutParams();
+//            Log.w("AAA",layout.getMeasuredHeight()+behavior.getTopAndBottomOffset()+"");
+            child.setImageHeight(layout.getMeasuredHeight()+behavior.getTopAndBottomOffset());
+//            Log.w("AAA",layout.getMeasuredHeight()+"     "+behavior.getTopAndBottomOffset());
+//            params.height = layout.getMeasuredHeight() + behavior.getTopAndBottomOffset();
+////            child.setLayoutParams(params);
+//            Log.w("AAA","height-->"+sum+"   "+params.height);
             return false;
         }
 
         @Override
-        public boolean onMeasureChild(CoordinatorLayout parent, ImageView child, int parentWidthMeasureSpec, int widthUsed, int parentHeightMeasureSpec, int heightUsed) {
-            ViewGroup.LayoutParams params = child.getLayoutParams();
-            Log.w("AAA","onMeasureChild-->"+params.height);
-            child.measure(parentWidthMeasureSpec, View.MeasureSpec.makeMeasureSpec(params.height, View.MeasureSpec.EXACTLY));
+        public boolean onMeasureChild(CoordinatorLayout parent, DynamicSizeImageView child, int parentWidthMeasureSpec, int widthUsed, int parentHeightMeasureSpec, int heightUsed) {
+            int height = (int) (UiUtils.getScreenWidth() * 1.5f);
+            child.measure(parentWidthMeasureSpec,View.MeasureSpec.makeMeasureSpec(height, View.MeasureSpec.EXACTLY));
+//            ViewGroup.LayoutParams params = child.getLayoutParams();
+////            Log.w("AAA","onMeasureChild-->"+sum+"   "+params.height);
+//            sum++;
+//            child.measure(parentWidthMeasureSpec, View.MeasureSpec.makeMeasureSpec(params.height, View.MeasureSpec.EXACTLY));
 //            final int childLpHeight = child.getLayoutParams().height;
 //            if (childLpHeight == ViewGroup.LayoutParams.MATCH_PARENT
 //                    || childLpHeight == ViewGroup.LayoutParams.WRAP_CONTENT) {
@@ -276,8 +287,8 @@ public class CustomBehavior extends HeaderBehavior<CustomHeadLayout>{
 
 
         @Override
-        public boolean onLayoutChild(CoordinatorLayout parent, ImageView child, int layoutDirection) {
-            Log.w("AAA","onLayoutChild-->");
+        public boolean onLayoutChild(CoordinatorLayout parent, DynamicSizeImageView child, int layoutDirection) {
+//            Log.w("AAA","onLayoutChild-->");
             parent.onLayoutChild(child,layoutDirection);
             return true;
         }
