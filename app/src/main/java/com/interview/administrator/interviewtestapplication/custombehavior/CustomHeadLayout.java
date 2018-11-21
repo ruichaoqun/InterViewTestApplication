@@ -1,12 +1,18 @@
 package com.interview.administrator.interviewtestapplication.custombehavior;
 
 import android.content.Context;
+import android.support.design.widget.AppBarLayout;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.widget.RelativeLayout;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class CustomHeadLayout extends RelativeLayout {
+    private List<OnOffsetChangedListener> mListeners;
+
     public CustomHeadLayout(Context context) {
         super(context);
     }
@@ -19,9 +25,37 @@ public class CustomHeadLayout extends RelativeLayout {
         super(context, attrs, defStyleAttr);
     }
 
-    @Override
-    public boolean dispatchTouchEvent(MotionEvent ev) {
-        Log.w("AAA",ev.getActionMasked()+"");
-        return super.dispatchTouchEvent(ev);
+    public void addOnOffsetChangedListener(OnOffsetChangedListener listener) {
+        if (mListeners == null) {
+            mListeners = new ArrayList<>();
+        }
+        if (listener != null && !mListeners.contains(listener)) {
+            mListeners.add(listener);
+        }
+    }
+
+    public void removeOnOffsetChangedListener(OnOffsetChangedListener listener) {
+        if (mListeners != null && listener != null) {
+            mListeners.remove(listener);
+        }
+    }
+
+    void dispatchOffsetUpdates(int offset) {
+        // Iterate backwards through the list so that most recently added listeners
+        // get the first chance to decide
+        if (mListeners != null) {
+            for (int i = 0, z = mListeners.size(); i < z; i++) {
+                final OnOffsetChangedListener listener = mListeners.get(i);
+                if (listener != null) {
+                    listener.onOffsetChanged(this, offset);
+                }
+            }
+        }
+    }
+
+
+    public interface OnOffsetChangedListener {
+
+        void onOffsetChanged(CustomHeadLayout headLayout, int verticalOffset);
     }
 }

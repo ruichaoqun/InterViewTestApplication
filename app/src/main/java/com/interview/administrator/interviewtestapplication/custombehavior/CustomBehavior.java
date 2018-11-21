@@ -17,6 +17,7 @@ import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.RelativeLayout;
 
 import com.interview.administrator.interviewtestapplication.UiUtils;
@@ -82,45 +83,15 @@ public class CustomBehavior extends HeaderBehavior<CustomHeadLayout>{
     @Override
     public boolean onLayoutChild(CoordinatorLayout parent, CustomHeadLayout child, int layoutDirection) {
         boolean handled = super.onLayoutChild(parent, child, layoutDirection);
-        setTopAndBottomOffset(mOriginalOffsetTop);
+        setHeaderTopBottomOffset(parent,child,mOriginalOffsetTop);
         return handled;
     }
 
     @Override
     int setHeaderTopBottomOffset(CoordinatorLayout parent, CustomHeadLayout header, int newOffset, int minOffset, int maxOffset) {
-        return super.setHeaderTopBottomOffset(parent,header,newOffset,minOffset,maxOffset);
-//        final int curOffset = getTopBottomOffsetForScrollingSibling();
-//        int consumed = 0;
-//
-//        if (minOffset != 0 && curOffset >= minOffset && curOffset <= maxOffset) {
-//            // If we have some scrolling range, and we're currently within the min and max
-//            // offsets, calculate a new offset
-//            newOffset = MathUtils.clamp(newOffset, minOffset, maxOffset);
-//            if (curOffset != newOffset) {
-//
-//                final boolean offsetChanged = setTopAndBottomOffset(newOffset);
-//
-//                // Update how much dy we have consumed
-//                consumed = curOffset - newOffset;
-//
-////                if (!offsetChanged && appBarLayout.hasChildWithInterpolator()) {
-////                    // If the offset hasn't changed and we're using an interpolated scroll
-////                    // then we need to keep any dependent views updated. CoL will do this for
-////                    // us when we move, but we need to do it manually when we don't (as an
-////                    // interpolated scroll may finish early).
-////                    parent.dispatchDependentViewsChanged(appBarLayout);
-////                }
-////
-////                // Dispatch the updates to any listeners
-////                appBarLayout.dispatchOffsetUpdates(getTopAndBottomOffset());
-////
-////                // Update the AppBarLayout's drawable state (for any elevation changes)
-////                updateAppBarLayoutDrawableState(coordinatorLayout, appBarLayout, newOffset,
-////                        newOffset < curOffset ? -1 : 1, false);
-//            }
-//        }
-//
-//        return consumed;
+        int cnsumed = super.setHeaderTopBottomOffset(parent,header,newOffset,minOffset,maxOffset);
+        header.dispatchOffsetUpdates(getTopAndBottomOffset());
+        return cnsumed;
     }
 
     @Override
@@ -165,33 +136,35 @@ public class CustomBehavior extends HeaderBehavior<CustomHeadLayout>{
     @Override
     public void onNestedPreScroll(@NonNull CoordinatorLayout coordinatorLayout, @NonNull CustomHeadLayout child, @NonNull View target, int dx, int dy, @NonNull int[] consumed, int type) {
         if (dy > 0) {
-//            Log.w("AAA","dy-->"+dy);
-            Log.w("AAA","onNestedPreScroll-->");
-            consumed[1] = scroll(coordinatorLayout, child, dy, getMaxDragOffset(child), 0);
+            int maxOffset = 0;
+            if(type == ViewCompat.TYPE_NON_TOUCH){
+                maxOffset = mOriginalOffsetTop;
+            }
+            consumed[1] = scroll(coordinatorLayout, child, dy, getMaxDragOffset(child), maxOffset);
         }
     }
 
     @Override
     public void onNestedScroll(@NonNull CoordinatorLayout coordinatorLayout, @NonNull CustomHeadLayout child, @NonNull View target, int dxConsumed, int dyConsumed, int dxUnconsumed, int dyUnconsumed, int type) {
         if (dyUnconsumed < 0) {
+            int maxOffset = 0;
+            if(type == ViewCompat.TYPE_NON_TOUCH){
+                maxOffset = mOriginalOffsetTop;
+            }
             // If the scrolling view is scrolling down but not consuming, it's probably be at
             // the top of it's content
-            Log.w("AAA","onNestedScroll-->");
             scroll(coordinatorLayout, child, dyUnconsumed,
-                    getMaxDragOffset(child), 0);
+                    getMaxDragOffset(child), maxOffset);
         }
     }
 
     @Override
-    public boolean onNestedFling(@NonNull CoordinatorLayout coordinatorLayout, @NonNull CustomHeadLayout child, @NonNull View target, float velocityX, float velocityY, boolean consumed) {
-        Log.w("AAA","onNestedFling-->");
-        return false;
-    }
-
-    @Override
-    public boolean onNestedPreFling(@NonNull CoordinatorLayout coordinatorLayout, @NonNull CustomHeadLayout child, @NonNull View target, float velocityX, float velocityY) {
-        Log.w("AAA","onNestedPreFling-->");
-        return false;
+    public void onStopNestedScroll(@NonNull CoordinatorLayout coordinatorLayout, @NonNull CustomHeadLayout child, @NonNull View target, int type) {
+        if(type == ViewCompat.TYPE_TOUCH ){
+            if(getTopAndBottomOffset() > mOriginalOffsetTop){
+                fling(coordinatorLayout,child,mOriginalOffsetTop,mOriginalOffsetTop,50);
+            }
+        }
     }
 
     public static class ScrollingViewBehavior extends CustomHeaderScrollingViewBehavior{
@@ -240,6 +213,73 @@ public class CustomBehavior extends HeaderBehavior<CustomHeadLayout>{
             CoordinatorLayout.LayoutParams params = (CoordinatorLayout.LayoutParams) v.getLayoutParams();
             CustomBehavior behavior = (CustomBehavior) params.getBehavior();
             return behavior.getScrollRange();
+        }
+    }
+
+
+
+    public static class ImageBehavior extends CoordinatorLayout.Behavior<ImageView>{
+        public ImageBehavior() {
+        }
+
+        public ImageBehavior(Context context, AttributeSet attrs) {
+            super(context, attrs);
+        }
+
+        @Override
+        public boolean layoutDependsOn(CoordinatorLayout parent, ImageView child, View dependency) {
+            return dependency instanceof CustomHeadLayout;
+        }
+
+        @Override
+        public boolean onDependentViewChanged(CoordinatorLayout parent, ImageView child, View dependency) {
+            CustomHeadLayout layout = (CustomHeadLayout) dependency;
+            CustomBehavior behavior = (CustomBehavior) ((CoordinatorLayout.LayoutParams)layout.getLayoutParams()).getBehavior();
+            ViewGroup.LayoutParams params = child.getLayoutParams();
+            params.height = layout.getMeasuredHeight() + behavior.getTopAndBottomOffset();
+            //child.setLayoutParams(params);
+            Log.w("AAA","height-->"+params.height);
+            return false;
+        }
+
+        @Override
+        public boolean onMeasureChild(CoordinatorLayout parent, ImageView child, int parentWidthMeasureSpec, int widthUsed, int parentHeightMeasureSpec, int heightUsed) {
+            ViewGroup.LayoutParams params = child.getLayoutParams();
+            Log.w("AAA","onMeasureChild-->"+params.height);
+            child.measure(parentWidthMeasureSpec, View.MeasureSpec.makeMeasureSpec(params.height, View.MeasureSpec.EXACTLY));
+//            final int childLpHeight = child.getLayoutParams().height;
+//            if (childLpHeight == ViewGroup.LayoutParams.MATCH_PARENT
+//                    || childLpHeight == ViewGroup.LayoutParams.WRAP_CONTENT) {
+//                // If the menu's height is set to match_parent/wrap_content then measure it
+//                // with the maximum visible height
+//
+//                final List<View> dependencies = parent.getDependencies(child);
+//                final CustomHeadLayout header = findFirstDependency(dependencies);
+//                if (header != null) {
+//                    CustomBehavior behavior = (CustomBehavior) ((CoordinatorLayout.LayoutParams)header.getLayoutParams()).getBehavior();
+//                    child.measure(parentWidthMeasureSpec, View.MeasureSpec.makeMeasureSpec(header.getMeasuredHeight() + behavior.mOriginalOffsetTop, View.MeasureSpec.EXACTLY));
+//                    return true;
+//                }
+//            }
+            return true;
+        }
+
+        protected CustomHeadLayout findFirstDependency(List<View> views) {
+            for (int i = 0, z = views.size(); i < z; i++) {
+                View view = views.get(i);
+                if (view instanceof CustomHeadLayout) {
+                    return (CustomHeadLayout) view;
+                }
+            }
+            return null;
+        }
+
+
+        @Override
+        public boolean onLayoutChild(CoordinatorLayout parent, ImageView child, int layoutDirection) {
+            Log.w("AAA","onLayoutChild-->");
+            parent.onLayoutChild(child,layoutDirection);
+            return true;
         }
     }
 }
