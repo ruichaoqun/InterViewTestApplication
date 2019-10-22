@@ -35,20 +35,17 @@ public class DynamicSizeImageView extends AppCompatImageView {
 
     public DynamicSizeImageView(Context context) {
         super(context);
-        init();
     }
 
     public DynamicSizeImageView(Context context, AttributeSet attrs) {
         super(context, attrs);
-        init();
     }
 
     public DynamicSizeImageView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-        init();
     }
 
-    private void init() {
+    {
         rect = new Rect();
     }
 

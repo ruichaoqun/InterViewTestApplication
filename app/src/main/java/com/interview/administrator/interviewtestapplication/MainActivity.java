@@ -28,38 +28,9 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View view) {
                 Intent intent = new Intent(MainActivity.this,Test1Activity.class);
                 startActivity(intent);
-//                new AlertDialog.Builder(MainActivity.this)
-//                        .setTitle("asdas")
-//                        .setPositiveButton("yes", new DialogInterface.OnClickListener() {
-//                            @Override
-//                            public void onClick(DialogInterface dialogInterface, int i) {
-//                                dialogInterface.dismiss();
-//                            }
-//                        }).create().show();
-//                Intent intent = new Intent(MainActivity.this,MyService.class);
-//                startService(intent);
-//                bindService(intent, new ServiceConnection() {
-//                    @Override
-//                    public void onServiceConnected(ComponentName name, IBinder service) {
-//                        Log.w("AAA","onServiceConnected");
-//                    }
-//
-//                    @Override
-//                    public void onServiceDisconnected(ComponentName name) {
-//
-//                    }
-//                }, Service.BIND_AUTO_CREATE);
             }
         });
 
-//        findViewById(R.id.text2).setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                Intent intent = new Intent(MainActivity.this,MyService.class);
-//                intent.putExtra("type",1);
-//                startService(intent);
-//            }
-//        });
     }
 
 

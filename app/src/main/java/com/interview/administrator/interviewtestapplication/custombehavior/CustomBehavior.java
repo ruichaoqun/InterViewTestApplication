@@ -78,7 +78,6 @@ public class CustomBehavior extends HeaderBehavior<CustomHeadLayout>{
         }
         mMinOffsetTop = - child.getMeasuredHeight()  + minHeaderHeight;
         mScrollRange = -mMinOffsetTop;
-//        Log.w("AAA","onMeasureChild");
         return true;
     }
 
