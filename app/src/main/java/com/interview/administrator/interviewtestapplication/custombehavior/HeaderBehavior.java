@@ -1,9 +1,10 @@
 package com.interview.administrator.interviewtestapplication.custombehavior;
 
 import android.content.Context;
-import android.support.design.widget.CoordinatorLayout;
-import android.support.v4.math.MathUtils;
-import android.support.v4.view.ViewCompat;
+
+import androidx.coordinatorlayout.widget.CoordinatorLayout;
+import androidx.core.math.MathUtils;
+import androidx.core.view.ViewCompat;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.MotionEvent;
@@ -24,6 +25,7 @@ public abstract class HeaderBehavior<V extends View> extends CustomViewOffsetBeh
     private int mLastMotionY;
     private int mTouchSlop = -1;
     private VelocityTracker mVelocityTracker;
+    protected Boolean flag = false;
 
     public HeaderBehavior() {}
 
@@ -136,7 +138,7 @@ public abstract class HeaderBehavior<V extends View> extends CustomViewOffsetBeh
                 }
 
 
-                if (mIsBeingDragged) {
+                if (mIsBeingDragged && !flag) {
                     mLastMotionY = y;
                     //下拉dy为负，上拉为正
                     // We're being dragged so scroll the ABL
@@ -146,7 +148,7 @@ public abstract class HeaderBehavior<V extends View> extends CustomViewOffsetBeh
             }
 
             case MotionEvent.ACTION_UP:
-                if (mVelocityTracker != null) {
+                if (mVelocityTracker != null && !flag) {
                     mVelocityTracker.addMovement(ev);
                     mVelocityTracker.computeCurrentVelocity(1000);
                     float yvel = mVelocityTracker.getYVelocity(mActivePointerId);
@@ -208,6 +210,7 @@ public abstract class HeaderBehavior<V extends View> extends CustomViewOffsetBeh
 
     final boolean fling(CoordinatorLayout coordinatorLayout, V layout, int minOffset,
                         int maxOffset, float velocityY) {
+        Log.w("AAAAAAA","velocityY-->"+velocityY);
         if (mFlingRunnable != null) {
             layout.removeCallbacks(mFlingRunnable);
             mFlingRunnable = null;

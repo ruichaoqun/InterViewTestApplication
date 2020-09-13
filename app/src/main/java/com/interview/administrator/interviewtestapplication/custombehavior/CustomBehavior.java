@@ -2,27 +2,19 @@ package com.interview.administrator.interviewtestapplication.custombehavior;
 
 import android.animation.ValueAnimator;
 import android.content.Context;
-import android.graphics.Rect;
-import android.support.annotation.NonNull;
-import android.support.design.widget.AppBarLayout;
-import android.support.design.widget.CoordinatorLayout;
-import android.support.v4.math.MathUtils;
-import android.support.v4.view.GravityCompat;
-import android.support.v4.view.ViewCompat;
-import android.support.v4.view.WindowInsetsCompat;
-import android.support.v7.widget.Toolbar;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.widget.Toolbar;
+import androidx.coordinatorlayout.widget.CoordinatorLayout;
+import androidx.core.view.ViewCompat;
+
 import android.util.AttributeSet;
 import android.util.Log;
-import android.view.Gravity;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
-import android.widget.RelativeLayout;
 
 import com.interview.administrator.interviewtestapplication.DynamicSizeImageView;
 import com.interview.administrator.interviewtestapplication.UiUtils;
-import com.interview.administrator.interviewtestapplication.custombehavior.CustomHeaderScrollingViewBehavior;
 
 import java.lang.ref.WeakReference;
 import java.util.List;
@@ -47,12 +39,12 @@ import java.util.List;
  * </table>
  */
 public class CustomBehavior extends HeaderBehavior<CustomHeadLayout>{
-    private int mOriginalOffsetTop;
     private int mMinOffsetTop;
     private int mScrollRange;
 
     private ValueAnimator mOffsetAnimator;
     private WeakReference<View> mLastNestedScrollingChildRef;
+
 
 
     public CustomBehavior() {
@@ -64,19 +56,10 @@ public class CustomBehavior extends HeaderBehavior<CustomHeadLayout>{
 
     @Override
     public boolean onMeasureChild(CoordinatorLayout parent, CustomHeadLayout child, int parentWidthMeasureSpec, int widthUsed, int parentHeightMeasureSpec, int heightUsed) {
-        int height = (int) (UiUtils.getScreenWidth() * 1.5f);
-        child.measure(parentWidthMeasureSpec,View.MeasureSpec.makeMeasureSpec(height, View.MeasureSpec.EXACTLY));
-        mOriginalOffsetTop = -child.getMeasuredHeight() / 3 - UiUtils.dp2px(20);
+        child.measure(parentWidthMeasureSpec, View.MeasureSpec.makeMeasureSpec(UiUtils.dp2px(454), View.MeasureSpec.EXACTLY));
         int minHeaderHeight = 0;
         int count = parent.getChildCount();
-        for (int i = 0; i < count; i++) {
-            View view = parent.getChildAt(i);
-            if(view instanceof Toolbar){
-                minHeaderHeight = view.getMeasuredHeight();
-                break;
-            }
-        }
-        mMinOffsetTop = - child.getMeasuredHeight()  + minHeaderHeight;
+        mMinOffsetTop = - UiUtils.dp2px(374)+UiUtils.getStatusBarHeight();
         mScrollRange = -mMinOffsetTop;
         return true;
     }
@@ -84,21 +67,23 @@ public class CustomBehavior extends HeaderBehavior<CustomHeadLayout>{
     @Override
     public boolean onLayoutChild(CoordinatorLayout parent, CustomHeadLayout child, int layoutDirection) {
         boolean handled = super.onLayoutChild(parent, child, layoutDirection);
-        setHeaderTopBottomOffset(parent,child,mOriginalOffsetTop);
         return handled;
     }
 
     @Override
     int setHeaderTopBottomOffset(CoordinatorLayout parent, CustomHeadLayout header, int newOffset, int minOffset, int maxOffset) {
         int cnsumed = super.setHeaderTopBottomOffset(parent,header,newOffset,minOffset,maxOffset);
-        float rate =(float)(mMinOffsetTop - getTopAndBottomOffset())/(float)(mMinOffsetTop - mOriginalOffsetTop);
+        float rate =(float)(mMinOffsetTop - getTopAndBottomOffset())/(float)(mMinOffsetTop);
+        if(rate == 0){
+            flag = true;
+        }
         header.dispatchOffsetUpdates(getTopAndBottomOffset(),rate);
         return cnsumed;
     }
 
     @Override
     int getScrollOriginalOffset(CustomHeadLayout view) {
-        return mOriginalOffsetTop;
+        return 0;
     }
 
     @Override
@@ -137,21 +122,24 @@ public class CustomBehavior extends HeaderBehavior<CustomHeadLayout>{
 
     @Override
     public void onNestedPreScroll(@NonNull CoordinatorLayout coordinatorLayout, @NonNull CustomHeadLayout child, @NonNull View target, int dx, int dy, @NonNull int[] consumed, int type) {
+//        Log.w("AAAAA","onNestedPreScroll-->"+dy);
         if (dy > 0) {
             int maxOffset = 0;
             if(type == ViewCompat.TYPE_NON_TOUCH){
-                maxOffset = mOriginalOffsetTop;
+                maxOffset = 0;
             }
             consumed[1] = scroll(coordinatorLayout, child, dy, getMaxDragOffset(child), maxOffset);
+//            Log.w("AAAAA","onNestedPreScroll-->consumed--"+consumed[1]);
         }
     }
 
     @Override
     public void onNestedScroll(@NonNull CoordinatorLayout coordinatorLayout, @NonNull CustomHeadLayout child, @NonNull View target, int dxConsumed, int dyConsumed, int dxUnconsumed, int dyUnconsumed, int type) {
-        if (dyUnconsumed < 0) {
+//        Log.w("AAAAA","onNestedScroll-->"+dyUnconsumed);
+        if (dyUnconsumed < 0&& !flag) {
             int maxOffset = 0;
             if(type == ViewCompat.TYPE_NON_TOUCH){
-                maxOffset = mOriginalOffsetTop;
+                maxOffset = 0;
             }
             // If the scrolling view is scrolling down but not consuming, it's probably be at
             // the top of it's content
@@ -163,10 +151,15 @@ public class CustomBehavior extends HeaderBehavior<CustomHeadLayout>{
     @Override
     public void onStopNestedScroll(@NonNull CoordinatorLayout coordinatorLayout, @NonNull CustomHeadLayout child, @NonNull View target, int type) {
         if(type == ViewCompat.TYPE_TOUCH ){
-            if(getTopAndBottomOffset() > mOriginalOffsetTop){
-                fling(coordinatorLayout,child,mOriginalOffsetTop,mOriginalOffsetTop,50);
+            if(getTopAndBottomOffset() > 0){
+                fling(coordinatorLayout,child,0,0,50);
             }
         }
+    }
+
+    void expand(@NonNull CoordinatorLayout coordinatorLayout, @NonNull CustomHeadLayout child){
+        flag = false;
+        fling(coordinatorLayout,child,0,0,10000);
     }
 
     public static class ScrollingViewBehavior extends CustomHeaderScrollingViewBehavior{

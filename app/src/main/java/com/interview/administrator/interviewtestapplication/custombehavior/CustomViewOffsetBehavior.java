@@ -1,9 +1,10 @@
 package com.interview.administrator.interviewtestapplication.custombehavior;
 
 import android.content.Context;
-import android.support.design.widget.CoordinatorLayout;
 import android.util.AttributeSet;
 import android.view.View;
+
+import androidx.coordinatorlayout.widget.CoordinatorLayout;
 
 /**
  * <p>Description.</p>

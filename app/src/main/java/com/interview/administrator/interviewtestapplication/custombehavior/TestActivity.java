@@ -1,13 +1,8 @@
 package com.interview.administrator.interviewtestapplication.custombehavior;
 
-import android.support.design.widget.CoordinatorLayout;
-import android.support.design.widget.TabLayout;
-import android.support.v4.app.Fragment;
-import android.support.v4.view.ViewPager;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -16,6 +11,14 @@ import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.coordinatorlayout.widget.CoordinatorLayout;
+import androidx.fragment.app.Fragment;
+import androidx.viewpager.widget.ViewPager;
+
+import com.google.android.material.tabs.TabLayout;
+import com.gyf.immersionbar.ImmersionBar;
 import com.interview.administrator.interviewtestapplication.R;
 import com.interview.administrator.interviewtestapplication.UiUtils;
 import com.interview.administrator.interviewtestapplication.custombehavior.dummy.DummyContent;
@@ -24,35 +27,33 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class TestActivity extends AppCompatActivity implements ItemFragment.OnListFragmentInteractionListener, CustomHeadLayout.OnOffsetChangedListener {
-    private Toolbar mToolbar;
     private CustomHeadLayout layout;
     private ImageView imageView;
     private TabLayout tabLayout;
     private ViewPager viewPager;
     CustomHeadLayout customHeadLayout;
-    private TextView title;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
         setContentView(R.layout.activity_test);
-        mToolbar = findViewById(R.id.toolbar);
+        ImmersionBar.with(this).transparentBar().init();
         layout = findViewById(R.id.head_layout);
-        title = findViewById(R.id.tv_app_bar_title);
         imageView = findViewById(R.id.image);
-        setSupportActionBar(mToolbar);
-        getSupportActionBar().setDisplayShowTitleEnabled(false);
-        mToolbar.setPadding(0, UiUtils.getStatusBarHeight(),0,0);
 
         tabLayout = findViewById(R.id.tab_layout);
         viewPager = findViewById(R.id.view_pager);
         initViewPager();
         customHeadLayout = findViewById(R.id.head_layout);
         customHeadLayout.addOnOffsetChangedListener(this);
-        title.setText("Read The fucking Source Code");
-        title.setVisibility(View.INVISIBLE);
+        findViewById(R.id.iv_back).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                CoordinatorLayout.LayoutParams params= (CoordinatorLayout.LayoutParams) customHeadLayout.getLayoutParams();
+                ((CustomBehavior)params.getBehavior()).expand((CoordinatorLayout) customHeadLayout.getParent(),customHeadLayout);
+            }
+        });
     }
 
     private void initViewPager() {
@@ -87,10 +88,11 @@ public class TestActivity extends AppCompatActivity implements ItemFragment.OnLi
 
     @Override
     public void onOffsetChanged(CustomHeadLayout headLayout, int verticalOffset, float rate) {
-        if(rate == 0 && title.getVisibility() == View.INVISIBLE){
-            title.setVisibility(View.VISIBLE);
-        }else if(rate != 0 && title.getVisibility() == View.VISIBLE){
-            title.setVisibility(View.INVISIBLE);
+//        Log.w("AAAAAAA","rate-->"+rate);
+        if(rate == 0){
+            ImmersionBar.with(this).statusBarDarkFont(true).init();
+        }else{
+            ImmersionBar.with(this).statusBarDarkFont(false).init();
         }
     }
 }

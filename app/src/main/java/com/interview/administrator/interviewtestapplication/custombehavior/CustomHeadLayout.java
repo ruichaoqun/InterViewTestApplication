@@ -1,28 +1,29 @@
 package com.interview.administrator.interviewtestapplication.custombehavior;
 
 import android.content.Context;
-import android.support.design.widget.AppBarLayout;
 import android.util.AttributeSet;
-import android.util.Log;
-import android.view.MotionEvent;
-import android.widget.RelativeLayout;
+import android.view.View;
+import android.widget.LinearLayout;
+
+
+import com.interview.administrator.interviewtestapplication.R;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class CustomHeadLayout extends RelativeLayout {
+public class CustomHeadLayout extends LinearLayout {
     private List<OnOffsetChangedListener> mListeners;
-
     public CustomHeadLayout(Context context) {
-        super(context);
+        this(context,null);
     }
 
     public CustomHeadLayout(Context context, AttributeSet attrs) {
-        super(context, attrs);
+        this(context, attrs,0);
     }
 
     public CustomHeadLayout(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
+        setOrientation(LinearLayout.VERTICAL);
     }
 
     public void addOnOffsetChangedListener(OnOffsetChangedListener listener) {
@@ -41,10 +42,14 @@ public class CustomHeadLayout extends RelativeLayout {
     }
 
     void dispatchOffsetUpdates(int offset,float rate) {
-        // Iterate backwards through the list so that most recently added listeners
-        // get the first chance to decide
-//        Log.w("AAA","offset-->"+offset);
-        setAlpha(rate);
+        getChildAt(0).setAlpha(rate);
+        if(rate == 0){
+            findViewById(R.id.iv_back).setVisibility(View.VISIBLE);
+            findViewById(R.id.iv_search).setVisibility(View.VISIBLE);
+        }else{
+            findViewById(R.id.iv_back).setVisibility(View.GONE);
+            findViewById(R.id.iv_search).setVisibility(View.GONE);
+        }
         if (mListeners != null) {
             for (int i = 0, z = mListeners.size(); i < z; i++) {
                 final OnOffsetChangedListener listener = mListeners.get(i);

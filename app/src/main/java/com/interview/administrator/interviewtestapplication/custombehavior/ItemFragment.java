@@ -2,19 +2,24 @@ package com.interview.administrator.interviewtestapplication.custombehavior;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
-import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.annotation.NonNull;
+import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.interview.administrator.interviewtestapplication.R;
 import com.interview.administrator.interviewtestapplication.custombehavior.dummy.DummyContent;
 import com.interview.administrator.interviewtestapplication.custombehavior.dummy.DummyContent.DummyItem;
-
-import java.util.List;
+import com.scwang.smart.refresh.footer.ClassicsFooter;
+import com.scwang.smart.refresh.header.ClassicsHeader;
+import com.scwang.smart.refresh.layout.SmartRefreshLayout;
+import com.scwang.smart.refresh.layout.api.RefreshLayout;
+import com.scwang.smart.refresh.layout.listener.OnRefreshListener;
 
 /**
  * A fragment representing a list of Items.
@@ -60,18 +65,23 @@ public class ItemFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_item_list, container, false);
-
+        RecyclerView recyclerView = view.findViewById(R.id.list);
         // Set the adapter
-        if (view instanceof RecyclerView) {
-            Context context = view.getContext();
-            RecyclerView recyclerView = (RecyclerView) view;
-            if (mColumnCount <= 1) {
-                recyclerView.setLayoutManager(new LinearLayoutManager(context));
-            } else {
-                recyclerView.setLayoutManager(new GridLayoutManager(context, mColumnCount));
-            }
-            recyclerView.setAdapter(new MyItemRecyclerViewAdapter(DummyContent.ITEMS, mListener));
+        if (mColumnCount <= 1) {
+            recyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
+        } else {
+            recyclerView.setLayoutManager(new GridLayoutManager(requireContext(), mColumnCount));
         }
+        recyclerView.setAdapter(new MyItemRecyclerViewAdapter(DummyContent.ITEMS, mListener));
+        SmartRefreshLayout refreshLayout =  view.findViewById(R.id.refresh);
+        refreshLayout.setOnRefreshListener(new OnRefreshListener() {
+            @Override
+            public void onRefresh(@NonNull RefreshLayout refreshLayout) {
+                refreshLayout.finishRefresh();
+            }
+        });
+        refreshLayout.setRefreshHeader(new ClassicsHeader(requireContext()));
+        refreshLayout.setRefreshFooter(new ClassicsFooter(requireContext()));
         return view;
     }
 
